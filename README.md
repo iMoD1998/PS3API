@@ -16,6 +16,7 @@ if PS3.AttachProcess() == False:
 ```
 
 ### Memory
+#### Reading
 ```python
 PS3.ReadMemory(Address, NumBytes)
 PS3.ReadInt8(Address)
@@ -25,7 +26,9 @@ PS3.ReadInt64(Address)
 PS3.ReadFloat(Address)
 PS3.ReadDouble(Address)
 PS3.ReadString(Address, Encoding="ascii", MaxLength=1024)
-
+```
+#### Writing
+```python
 PS3.WriteMemory(Address, Bytes)
 PS3.WriteInt8(Address, Value)
 PS3.WriteInt16(Address, Value)
@@ -35,7 +38,6 @@ PS3.WriteFloat(Address, Value)
 PS3.WriteDouble(Address, Value)
 PS3.WriteString(Address, Value, Encoding="ascii")
 ```
-
 ### Remote Procedure Call (RPC)
 ```python
 PS3.RPC.Enable(0x02539F8) # MW2 1.14
