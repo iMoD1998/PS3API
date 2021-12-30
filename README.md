@@ -38,6 +38,7 @@ PS3.WriteFloat(Address, Value)
 PS3.WriteDouble(Address, Value)
 PS3.WriteString(Address, Value, Encoding="ascii")
 ```
+
 ### Remote Procedure Call (RPC)
 ```python
 PS3.RPC.Enable(0x02539F8) # MW2 1.14
@@ -59,4 +60,37 @@ or
 >>> C_API = TMAPIExports()
 >>> C_API.SNPS3InitTargetComms()
 <SNReturnCode.SN_S_OK: 0>
+```
+
+### Useful Scripts
+#### Assembler
+```python
+>>> from keystone import *
+>>> from pwn import * # for hex dump
+>>> Keystone = Ks(KS_ARCH_PPC, KS_MODE_64 | KS_MODE_BIG_ENDIAN)
+>>> Encoding, Count = Keystone.asm("li %r3, 0x1234")
+>>> print(hexdump(bytes(Encoding)))
+00000000  38 60 12 34  4e 80 00 20                            │8`·4│N·· │
+00000008
+```
+
+#### Disassembler
+```python
+>>> from capstone import *
+>>> Capstone = Cs(CS_ARCH_PPC, CS_MODE_64 | CS_MODE_BIG_ENDIAN)
+>>> for i in Capstone.disasm(PS3.ReadMemory(0x10000, 0xE0), 0x10000):
+...   print("0x%x:\t%s\t%s" %(i.address, i.mnemonic, i.op_str))
+...
+0x10000:        mflr    r0
+0x10004:        std     r0, -8(r1)
+0x10008:        std     r30, -0x18(r1)
+0x1000c:        std     r31, -0x10(r1)
+0x10010:        stdu    r1, -0x200(r1)
+0x10014:        lis     r31, 0x1005
+0x10018:        ori     r31, r31, 0x1000
+0x1001c:        lwz     r30, 0x70(r31)
+0x10020:        cmpwi   r30, 0
+0x10024:        beq     0x10118
+0x10028:        stfs    f1, 0x178(r1)
+....
 ```
