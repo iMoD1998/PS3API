@@ -1,5 +1,4 @@
-from .tmapi import TMAPI
-from .ccapi import CCAPI
-from .rpc import RPCFunction, RPC
-
-print("hahah")
+from .api import *
+from .tmapi import *
+from .ccapi import *
+from .rpc import *
