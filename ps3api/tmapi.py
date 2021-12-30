@@ -260,7 +260,10 @@ class TMAPI:
 
         return DefaultTargetIndex[0]
 
-    def ConnectTarget(self, TargetIndex):
+    def ConnectTarget(self, TargetIndex=-1):
+        if TargetIndex == -1:
+            TargetIndex = self.GetDefaultTarget()
+
         if self.NativeAPI.SNPS3ConnectEx(TargetIndex, None, True) not in [ SNReturnCode.SN_S_OK, SNReturnCode.SN_S_CONNECTED ]:
             return False
 
