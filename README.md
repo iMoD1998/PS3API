@@ -68,7 +68,7 @@ or
 >>> from keystone import *
 >>> from pwn import * # for hex dump
 >>> Keystone = Ks(KS_ARCH_PPC, KS_MODE_64 | KS_MODE_BIG_ENDIAN)
->>> Encoding, Count = Keystone.asm("li %r3, 0x1234")
+>>> Encoding, Count = Keystone.asm("li %r3, 0x1234\nblr")
 >>> print(hexdump(bytes(Encoding)))
 00000000  38 60 12 34  4e 80 00 20                            │8`·4│N·· │
 00000008
