@@ -1,4 +1,4 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 
 setup(name='ps3api',
       version='0.1',
@@ -7,5 +7,4 @@ setup(name='ps3api',
       author='iMoD1998',
       author_email='imod1998@protonmail.com',
       license='MIT',
-      packages=['ps3api'],
-      zip_safe=False)
+      packages=find_packages())

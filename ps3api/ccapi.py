@@ -2,7 +2,7 @@ import os
 import pathlib
 from ctypes import *
 
-from ps3api.common import CEnum
+from .common import CEnum
 
 class CCAPIError(CEnum):
     CCAPI_OK = (0)

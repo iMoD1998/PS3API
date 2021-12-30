@@ -3,7 +3,7 @@ from ctypes import *
 from ctypes import _SimpleCData
 from ctypes import _Pointer
 
-from ps3api.memutils import *
+from .memutils import *
 
 """
 .set STACK_SIZE, 0x200

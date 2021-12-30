@@ -1,7 +1,7 @@
-from ps3api.tmapi import TMAPI
-from ps3api.ccapi import CCAPI
-from ps3api.rpc import RPCFunction, RPC
-from ps3api.memutils import *
+from .tmapi import TMAPI
+from .ccapi import CCAPI
+from .rpc import RPCFunction, RPC
+from .memutils import *
 
 class PS3API:
     API_TMAPI = 0

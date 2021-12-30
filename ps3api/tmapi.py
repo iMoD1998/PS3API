@@ -4,7 +4,7 @@ from ctypes import *
 from ctypes import _SimpleCData
 from ctypes import _Pointer
 
-from ps3api.common import CEnum
+from .common import CEnum
 
 class SNReturnCode(CEnum):
     SN_S_OK = (0)
