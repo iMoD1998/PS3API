@@ -4,12 +4,130 @@ from ctypes import _SimpleCData
 from ctypes import _Pointer
 from .memutils import *
 
-# RPC shelldcode/payload that will be used to call functions (See RPCPayload.s)
-RPCPayload      = bytearray(b"\x7C\x08\x02\xA6\xF8\x01\xFF\xF8\xFB\xC1\xFF\xE8\xFB\xE1\xFF\xF0\xF8\x21\xFE\x01\x3F\xE0\x10\x05\x63\xFF\x10\x00\x83\xDF\x00\x70\x2C\x1E\x00\x00\x41\x82\x00\xF4\xD0\x21\x01\x78\xD0\x41\x01\x7C\xD0\x61\x01\x80\xD0\x81\x01\x84\xD0\xA1\x01\x88\xD0\xC1\x01\x8C\xD0\xE1\x01\x90\xD1\x01\x01\x94\xD1\x21\x01\x98\xF8\x61\x01\xA0\xF8\x81\x01\xA8\xF8\xA1\x01\xB0\xF8\xC1\x01\xB8\xF8\xE1\x01\xC0\xF9\x01\x01\xC8\xF9\x21\x01\xD0\xF9\x41\x01\xD8\xF9\x61\x01\xE0\xE8\x7F\x00\x00\xE8\x9F\x00\x08\xE8\xBF\x00\x10\xE8\xDF\x00\x18\xE8\xFF\x00\x20\xE9\x1F\x00\x28\xE9\x3F\x00\x30\xE9\x5F\x00\x38\xE9\x7F\x00\x40\xC0\x3F\x00\x48\xC0\x5F\x00\x4C\xC0\x7F\x00\x50\xC0\x9F\x00\x54\xC0\xBF\x00\x58\xC0\xDF\x00\x5C\xC0\xFF\x00\x60\xC1\x1F\x00\x64\xC1\x3F\x00\x68\x7F\xC9\x03\xA6\x4E\x80\x04\x21\xF8\x7F\x00\x78\xD0\x3F\x00\x80\x7F\xDE\xF2\x78\x93\xDF\x00\x70\xC0\x21\x01\x78\xC0\x41\x01\x7C\xC0\x61\x01\x80\xC0\x81\x01\x84\xC0\xA1\x01\x88\xC0\xC1\x01\x8C\xC0\xE1\x01\x90\xC1\x01\x01\x94\xC1\x21\x01\x98\xE8\x61\x01\xA0\xE8\x81\x01\xA8\xE8\xA1\x01\xB0\xE8\xC1\x01\xB8\xE8\xE1\x01\xC0\xE9\x01\x01\xC8\xE9\x21\x01\xD0\xE9\x41\x01\xD8\xE9\x61\x01\xE0\x38\x21\x02\x00\xE8\x01\xFF\xF8\x7C\x08\x03\xA6\x3F\xE0\xDE\xAD\x63\xFF\xBE\xEF\x7F\xE9\x03\xA6\xEB\xC1\xFF\xE8\xEB\xE1\xFF\xF0\x60\x00\x00\x00\x60\x00\x00\x00\x60\x00\x00\x00\x60\x00\x00\x00\x60\x00\x00\x00\x4E\x80\x04\x20\x7F\xE0\x00\x08")
-# Free space to write function arguments.
-RPCFreeSpace    = 0x10051000
-# Extra space to write arguments that dont fit in a register ie. arrays, strings etc..
-RPCArgDataSpace = RPCFreeSpace + 0x100
+class RPCPayload:
+    # RPC shelldcode/payload that will be used to call functions (See RPCPayload.s)
+    PayloadData = bytearray(
+        b"\x7C\x08\x02\xA6"
+        b"\xF8\x01\xFF\xF8"
+        b"\xFB\xA1\xFF\xE0"
+        b"\xFB\xC1\xFF\xE8"
+        b"\xFB\xE1\xFF\xF0"
+        b"\xF8\x21\xFE\x01"
+        b"\x3F\xE0\xCA\xFE"
+        b"\x63\xFF\xBE\xEF"
+        b"\x83\xDF\x00\x70"
+        b"\x2C\x1E\x00\x00"
+        b"\x41\x82\x00\xF4"
+        b"\xD8\x21\x00\xF0"
+        b"\xD8\x41\x00\xF8"
+        b"\xD8\x61\x01\x00"
+        b"\xD8\x81\x01\x68"
+        b"\xD8\xA1\x01\x70"
+        b"\xD8\xC1\x01\x78"
+        b"\xD8\xE1\x01\x80"
+        b"\xD9\x01\x01\x88"
+        b"\xD9\x21\x01\x90"
+        b"\xF8\x61\x01\x98"
+        b"\xF8\x81\x01\xA0"
+        b"\xF8\xA1\x01\xA8"
+        b"\xF8\xC1\x01\xB0"
+        b"\xF8\xE1\x01\xB8"
+        b"\xF9\x01\x01\xC0"
+        b"\xF9\x21\x01\xC8"
+        b"\xF9\x41\x01\xD0"
+        b"\xF9\x61\x01\xD8"
+        b"\xE8\x7F\x00\x00"
+        b"\xE8\x9F\x00\x08"
+        b"\xE8\xBF\x00\x10"
+        b"\xE8\xDF\x00\x18"
+        b"\xE8\xFF\x00\x20"
+        b"\xE9\x1F\x00\x28"
+        b"\xE9\x3F\x00\x30"
+        b"\xE9\x5F\x00\x38"
+        b"\xE9\x7F\x00\x40"
+        b"\xC0\x3F\x00\x48"
+        b"\xC0\x5F\x00\x4C"
+        b"\xC0\x7F\x00\x50"
+        b"\xC0\x9F\x00\x54"
+        b"\xC0\xBF\x00\x58"
+        b"\xC0\xDF\x00\x5C"
+        b"\xC0\xFF\x00\x60"
+        b"\xC1\x1F\x00\x64"
+        b"\xC1\x3F\x00\x68"
+        b"\x7F\xC9\x03\xA6"
+        b"\x4E\x80\x04\x21"
+        b"\xF8\x7F\x00\x78"
+        b"\xD0\x3F\x00\x80"
+        b"\x7F\xDE\xF2\x78"
+        b"\x93\xDF\x00\x70"
+        b"\xC8\x21\x00\xF0"
+        b"\xC8\x41\x00\xF8"
+        b"\xC8\x61\x01\x00"
+        b"\xC8\x81\x01\x68"
+        b"\xC8\xA1\x01\x70"
+        b"\xC8\xC1\x01\x78"
+        b"\xC8\xE1\x01\x80"
+        b"\xC9\x01\x01\x88"
+        b"\xC9\x21\x01\x90"
+        b"\xE8\x61\x01\x98"
+        b"\xE8\x81\x01\xA0"
+        b"\xE8\xA1\x01\xA8"
+        b"\xE8\xC1\x01\xB0"
+        b"\xE8\xE1\x01\xB8"
+        b"\xE9\x01\x01\xC0"
+        b"\xE9\x21\x01\xC8"
+        b"\xE9\x41\x01\xD0"
+        b"\xE9\x61\x01\xD8"
+        b"\x38\x21\x02\x00"
+        b"\xE8\x01\xFF\xF8"
+        b"\x7C\x08\x03\xA6"
+        b"\x3F\xE0\xDE\xAD"
+        b"\x63\xFF\xC0\xDE"
+        b"\x7F\xE9\x03\xA6"
+        b"\xEB\xA1\xFF\xE0"
+        b"\xEB\xC1\xFF\xE8"
+        b"\xEB\xE1\xFF\xF0"
+        b"\x60\x00\x00\x00"
+        b"\x60\x00\x00\x00"
+        b"\x60\x00\x00\x00"
+        b"\x60\x00\x00\x00"
+        b"\x60\x00\x00\x00"
+        b"\x4E\x80\x04\x20"
+        b"\x7F\xE0\x00\x08"
+    )
+
+    #
+    # The offset in the payload conaining the address where arguments will be loaded from.
+    # 16 bits for higher and lower (lis, ori)
+    #
+    ArgumentContextsHighOffset = 0x1A
+    ArgumentContextsLowOffset  = 0x1E
+
+    #
+    # The offsets in the payload for setting the address to branch back to after the hook.
+    # 16 bits for higher and lower (lis, ori)
+    #
+    BranchBackHighOffset       = 0x12A
+    BranchBackLowOffset        = 0x12E
+
+    #
+    # The offset for storing instructions that need to be executed before branching back to the original.
+    #
+    OriginalInstructionsOffset = 0x140
+
+    def SetPayloadData(Offset, Data):
+        RPCPayload.PayloadData[Offset:Offset+len(Data)] = Data
+
+    def SetArgumentContextsAddress(Address):
+        RPCPayload.SetPayloadData(RPCPayload.ArgumentContextsHighOffset, PackInt16BE((Address >> 16) & 0xFFFF))
+        RPCPayload.SetPayloadData(RPCPayload.ArgumentContextsLowOffset,  PackInt16BE(Address & 0xFFFF))
+
+    def SetBranchBackAddress(Address):
+        RPCPayload.SetPayloadData(RPCPayload.BranchBackHighOffset, PackInt16BE((Address >> 16) & 0xFFFF))
+        RPCPayload.SetPayloadData(RPCPayload.BranchBackLowOffset,  PackInt16BE(Address & 0xFFFF))
+
+    def SetOriginalInstructions(Instructions):
+        RPCPayload.SetPayloadData(RPCPayload.OriginalInstructionsOffset, Instructions)
 
 def RPCAddIntValue(Context, Value):
     Context.AddGPRegister(Value)
@@ -41,6 +159,18 @@ RPCCTypeBasicTypes = {
 }
 
 class RPCCallContext:
+    GPRegisterArrayOffset = 0x00
+    FPRegisterArrayOffset = 0x48
+    CallAddressOffset     = 0x70
+    ReturnGPOffset        = 0x78
+    ReturnFPOffset        = 0x80
+
+    def GetGPRegisterOffset(RegisterIndex):
+        return RPCCallContext.GPRegisterArrayOffset + (0x8 * RegisterIndex)
+
+    def GetFPRegisterOffset(RegisterIndex):
+        return RPCCallContext.FPRegisterArrayOffset + (0x4 * RegisterIndex)
+
     def __init__(self, ArgsAddress, ArgDataAddress):
         self.ArgsAddress        = ArgsAddress
         self.ArgDataAddress     = ArgDataAddress
@@ -49,8 +179,11 @@ class RPCCallContext:
         self.ArgumentIntIndex   = 0
         self.ArgumentFloatIndex = 0
     
+    def SetCallAddress(self, Address):
+        self.ArgumentsBuffer[RPCCallContext.CallAddressOffset:RPCCallContext.CallAddressOffset+4] = PackInt32BE(Address)
+
     def SetGPRegister(self, RegIndex, Value):
-        RegOffset = (0x8 * RegIndex)
+        RegOffset = RPCCallContext.GetGPRegisterOffset(RegIndex)
         self.ArgumentsBuffer[RegOffset:RegOffset+8] = PackInt64BE(Value)
 
     def AddGPRegister(self, Value):
@@ -61,7 +194,7 @@ class RPCCallContext:
         self.ArgumentIntIndex += 1
 
     def SetFPRegister(self, RegIndex, Value):
-        RegOffset = (0x48 + (0x4 * RegIndex))
+        RegOffset = RPCCallContext.GetFPRegisterOffset(RegIndex)
         self.ArgumentsBuffer[RegOffset:RegOffset+4] = PackIntFloatBE(Value)
 
     def AddFPRegister(self, Value):
@@ -76,6 +209,8 @@ class RPCCallContext:
         self.ArgumentsData.extend(Data)
         return self.ArgDataAddress + DataBeginOffset
 
+from pwn import *
+
 class RPCFunction:
     def __init__(self, API, Address):
         self.address  = Address
@@ -85,7 +220,7 @@ class RPCFunction:
 
     def __call__(self, *Args):
         ArgCount    = len(Args)
-        CallContext = RPCCallContext(RPCFreeSpace, RPCArgDataSpace)
+        CallContext = RPCCallContext(RPC.FreeSpaceAddress, RPC.ArgDataSpaceAddress)
 
         if ArgCount != len(self.argtypes):
             raise Exception('Wrong number of args expected: ' + str(len(self.argtypes)))
@@ -99,28 +234,35 @@ class RPCFunction:
                 RPCCTypeBasicTypes[self.argtypes[i]](CallContext, ArgValue)
             #elif issubclass(self.argtypes[i], _Pointer):
 
-        FinalPayload = CallContext.ArgumentsBuffer + CallContext.ArgumentsData
-
         # Set the function address to call in the payload.
-        FinalPayload[0x70:0x74] = PackInt32BE(self.address)
+        CallContext.SetCallAddress(self.address)
+
+        FinalArgumentData = CallContext.ArgumentsBuffer + CallContext.ArgumentsData
+
+        print(hexdump(FinalArgumentData))
 
         # Write payload
-        self.API.WriteMemory(RPCFreeSpace, FinalPayload)
+        self.API.WriteMemory(RPC.FreeSpaceAddress, FinalArgumentData)
 
         # Wait for function to execute
-        while self.API.ReadInt32(RPCFreeSpace + 0x70) != 0:
+        while self.API.ReadInt32(RPC.FreeSpaceAddress + 0x70) != 0:
             pass
 
         # TODO: Support complicated return types??
         if self.restype:           
             if self.restype == c_float:
-                return self.API.ReadFloat(RPCFreeSpace + 0x80)
+                return self.API.ReadFloat(RPC.FreeSpaceAddress + 0x80)
             else:
-                return self.API.ReadInt64(RPCFreeSpace + 0x78)
+                return self.API.ReadInt64(RPC.FreeSpaceAddress + 0x78)
         
         return None
 
 class RPC:
+    # Free space to write function arguments.
+    FreeSpaceAddress    = 0x10051000
+    # Extra space to write arguments that dont fit in a register ie. arrays, strings etc..
+    ArgDataSpaceAddress = FreeSpaceAddress + 0x100
+
     def __init__(self, API):
         self.API = API
         self.Function = lambda Address: RPCFunction(API, Address)
@@ -135,23 +277,19 @@ class RPC:
         if self.API.ReadMemory(HookAddress, 4) == HookPatch:
             return
 
-        '''
-        0x124 lis   %r31, 0xDEADBEEF@h
-        0x128 ori   %r31, %r31, 0xDEADBEEF@l
-        0x12C mtctr %r31
-        '''
-        
+        # Set the address to read arguments from (registers)
+        RPCPayload.SetArgumentContextsAddress(RPC.FreeSpaceAddress)
+
         # Set the address to jump back to after our RPC payload has ran.
-        RPCPayload[0x126:0x126+2] = PackInt16BE((HookAddressAfterPatch >> 16) & 0xFFFF)
-        RPCPayload[0x12A:0x12A+2] = PackInt16BE(HookAddressAfterPatch & 0xFFFF)
+        RPCPayload.SetBranchBackAddress(HookAddressAfterPatch)
 
         # Get original instructions
         self.OriginalInstructions = self.API.ReadMemory(HookAddress, len(HookPatch))
 
-        RPCPayload[0x138:0x138+len(HookPatch)] = self.OriginalInstructions
+        RPCPayload.SetOriginalInstructions(self.OriginalInstructions)
 
         # Write payload at ELF header because retarded page prot
-        self.API.WriteMemory(0x10000, RPCPayload)
+        self.API.WriteMemory(0x10000, RPCPayload.PayloadData)
 
         # Write branch for hook.
         self.API.WriteMemory(HookAddress, HookPatch)
