@@ -21,8 +21,8 @@ stdu  %r1,  -STACK_SIZE(%r1)
 #
 # Free space address used to store args.
 #
-lis   %r31, 0x10051000@h
-ori   %r31, %r31, 0x10051000@l
+lis   %r31, 0xCAFEBEEF@h
+ori   %r31, %r31, 0xCAFEBEEF@l
 
 #
 # Check if we have a function to call.
@@ -129,8 +129,8 @@ mtlr  %r0
 #
 # Set the count register to the original function after the hook.
 #
-lis   %r31, 0xDEADBEEF@h
-ori   %r31, %r31, 0xDEADBEEF@l
+lis   %r31, 0xDEADC0DE@h
+ori   %r31, %r31, 0xDEADC0DE@l
 mtctr %r31
 
 #
