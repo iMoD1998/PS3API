@@ -9,6 +9,7 @@ std   %r0,  -0x8(%r1)
 #
 # Backup nonvolatile registers
 #
+std   %r29, -0x20(%r1)
 std   %r30, -0x18(%r1)
 std   %r31, -0x10(%r1)
 
@@ -33,24 +34,24 @@ beq   _RPCEnd
 #
 # Backup hooked function args.
 #
-stfs  %f1,  STACK_SIZE-0x88(%r1)
-stfs  %f2,  STACK_SIZE-0x84(%r1)
-stfs  %f3,  STACK_SIZE-0x80(%r1)
-stfs  %f4,  STACK_SIZE-0x7C(%r1)
-stfs  %f5,  STACK_SIZE-0x78(%r1)
-stfs  %f6,  STACK_SIZE-0x74(%r1)
-stfs  %f7,  STACK_SIZE-0x70(%r1)
-stfs  %f8,  STACK_SIZE-0x6C(%r1)
-stfs  %f9,  STACK_SIZE-0x68(%r1)
-std   %r3,  STACK_SIZE-0x60(%r1)
-std   %r4,  STACK_SIZE-0x58(%r1)
-std   %r5,  STACK_SIZE-0x50(%r1)
-std   %r6,  STACK_SIZE-0x48(%r1)
-std   %r7,  STACK_SIZE-0x40(%r1)
-std   %r8,  STACK_SIZE-0x38(%r1)
-std   %r9,  STACK_SIZE-0x30(%r1)
-std   %r10, STACK_SIZE-0x28(%r1)
-std   %r11, STACK_SIZE-0x20(%r1)
+stfd  %f1,  STACK_SIZE-0x0110(%r1)
+stfd  %f2,  STACK_SIZE-0x0108(%r1)
+stfd  %f3,  STACK_SIZE-0x0100(%r1)
+stfd  %f4,  STACK_SIZE-0x0098(%r1)
+stfd  %f5,  STACK_SIZE-0x0090(%r1)
+stfd  %f6,  STACK_SIZE-0x0088(%r1)
+stfd  %f7,  STACK_SIZE-0x0080(%r1)
+stfd  %f8,  STACK_SIZE-0x0078(%r1)
+stfd  %f9,  STACK_SIZE-0x0070(%r1)
+std   %r3,  STACK_SIZE-0x0068(%r1)
+std   %r4,  STACK_SIZE-0x0060(%r1)
+std   %r5,  STACK_SIZE-0x0058(%r1)
+std   %r6,  STACK_SIZE-0x0050(%r1)
+std   %r7,  STACK_SIZE-0x0048(%r1)
+std   %r8,  STACK_SIZE-0x0040(%r1)
+std   %r9,  STACK_SIZE-0x0038(%r1)
+std   %r10, STACK_SIZE-0x0030(%r1)
+std   %r11, STACK_SIZE-0x0028(%r1)
 
 
 #
@@ -93,24 +94,24 @@ stw   %r30, 0x70(%r31)
 #
 # Restore hooked function args.
 #
-lfs   %f1,  STACK_SIZE-0x88(%r1)
-lfs   %f2,  STACK_SIZE-0x84(%r1)
-lfs   %f3,  STACK_SIZE-0x80(%r1)
-lfs   %f4,  STACK_SIZE-0x7C(%r1)
-lfs   %f5,  STACK_SIZE-0x78(%r1)
-lfs   %f6,  STACK_SIZE-0x74(%r1)
-lfs   %f7,  STACK_SIZE-0x70(%r1)
-lfs   %f8,  STACK_SIZE-0x6C(%r1)
-lfs   %f9,  STACK_SIZE-0x68(%r1)
-ld    %r3,  STACK_SIZE-0x60(%r1)
-ld    %r4,  STACK_SIZE-0x58(%r1)
-ld    %r5,  STACK_SIZE-0x50(%r1)
-ld    %r6,  STACK_SIZE-0x48(%r1)
-ld    %r7,  STACK_SIZE-0x40(%r1)
-ld    %r8,  STACK_SIZE-0x38(%r1)
-ld    %r9,  STACK_SIZE-0x30(%r1)
-ld    %r10, STACK_SIZE-0x28(%r1)
-ld    %r11, STACK_SIZE-0x20(%r1)
+lfd   %f1,  STACK_SIZE-0x0110(%r1)
+lfd   %f2,  STACK_SIZE-0x0108(%r1)
+lfd   %f3,  STACK_SIZE-0x0100(%r1)
+lfd   %f4,  STACK_SIZE-0x0098(%r1)
+lfd   %f5,  STACK_SIZE-0x0090(%r1)
+lfd   %f6,  STACK_SIZE-0x0088(%r1)
+lfd   %f7,  STACK_SIZE-0x0080(%r1)
+lfd   %f8,  STACK_SIZE-0x0078(%r1)
+lfd   %f9,  STACK_SIZE-0x0070(%r1)
+ld    %r3,  STACK_SIZE-0x0068(%r1)
+ld    %r4,  STACK_SIZE-0x0060(%r1)
+ld    %r5,  STACK_SIZE-0x0058(%r1)
+ld    %r6,  STACK_SIZE-0x0050(%r1)
+ld    %r7,  STACK_SIZE-0x0048(%r1)
+ld    %r8,  STACK_SIZE-0x0040(%r1)
+ld    %r9,  STACK_SIZE-0x0038(%r1)
+ld    %r10, STACK_SIZE-0x0030(%r1)
+ld    %r11, STACK_SIZE-0x0028(%r1)
 
 #
 # Free stack.
@@ -135,6 +136,7 @@ mtctr %r31
 #
 # Restore nonvolatile registers.
 #
+ld    %r29, -0x20(%r1)
 ld    %r30, -0x18(%r1)
 ld    %r31, -0x10(%r1)
 
