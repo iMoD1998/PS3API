@@ -6,7 +6,7 @@ from ctypes import _Pointer
 
 from .common import CEnum
 
-class SNReturnCode(CEnum):
+class SNResult(CEnum):
     SN_S_OK = (0)
     SN_S_PENDING = (1)
     SN_S_NO_MSG = (3)
@@ -86,7 +86,7 @@ class TMAPIExports:
         '''
         self.SNPS3InitTargetComms = self.TMAPI_DLL.SNPS3InitTargetComms
         self.SNPS3InitTargetComms.argtypes = []
-        self.SNPS3InitTargetComms.restype = SNReturnCode
+        self.SNPS3InitTargetComms.restype = SNResult
 
         '''
         SNAPI SNRESULT SNPS3CloseTargetComms(void);
@@ -95,7 +95,7 @@ class TMAPIExports:
         '''
         self.SNPS3CloseTargetComms = self.TMAPI_DLL.SNPS3CloseTargetComms
         self.SNPS3CloseTargetComms.argtypes = []
-        self.SNPS3CloseTargetComms.restype = SNReturnCode
+        self.SNPS3CloseTargetComms.restype = SNResult
 
         '''
         SNAPI SNRESULT SNPS3IsScanning();
@@ -104,7 +104,7 @@ class TMAPIExports:
         '''
         self.SNPS3IsScanning = self.TMAPI_DLL.SNPS3IsScanning
         self.SNPS3IsScanning.argtypes = []
-        self.SNPS3IsScanning.restype = SNReturnCode
+        self.SNPS3IsScanning.restype = SNResult
 
         '''
         SNAPI SNRESULT SNPS3Connect(
@@ -116,7 +116,7 @@ class TMAPIExports:
         '''
         self.SNPS3Connect = self.TMAPI_DLL.SNPS3Connect
         self.SNPS3Connect.argtypes = [ c_uint32, c_char_p ]
-        self.SNPS3Connect.restype = SNReturnCode
+        self.SNPS3Connect.restype = SNResult
 
         '''
         SNAPI SNRESULT SNPS3ConnectEx(
@@ -129,7 +129,7 @@ class TMAPIExports:
         '''
         self.SNPS3ConnectEx = self.TMAPI_DLL.SNPS3ConnectEx
         self.SNPS3ConnectEx.argtypes = [ c_uint32, c_char_p, c_bool ]
-        self.SNPS3ConnectEx.restype = SNReturnCode
+        self.SNPS3ConnectEx.restype = SNResult
 
         '''
         SNAPI SNRESULT SNPS3GetTargetInfo(
@@ -140,7 +140,7 @@ class TMAPIExports:
         '''
         self.SNPS3GetTargetInfo = self.TMAPI_DLL.SNPS3GetTargetInfo
         self.SNPS3GetTargetInfo.argtypes = [ POINTER(SNPS3TargetInfo) ]
-        self.SNPS3GetTargetInfo.restype = SNReturnCode
+        self.SNPS3GetTargetInfo.restype = SNResult
 
         '''
         SNAPI SNRESULT SNPS3GetDefaultTarget(
@@ -151,7 +151,7 @@ class TMAPIExports:
         '''
         self.SNPS3GetDefaultTarget = self.TMAPI_DLL.SNPS3GetDefaultTarget
         self.SNPS3GetDefaultTarget.argtypes = [ POINTER(c_uint32) ]
-        self.SNPS3GetDefaultTarget.restype = SNReturnCode
+        self.SNPS3GetDefaultTarget.restype = SNResult
 
         '''
         SNAPI SNRESULT SNPS3SetDefaultTarget(
@@ -162,7 +162,7 @@ class TMAPIExports:
         '''
         self.SNPS3SetDefaultTarget = self.TMAPI_DLL.SNPS3SetDefaultTarget
         self.SNPS3SetDefaultTarget.argtypes = [ c_uint32 ]
-        self.SNPS3SetDefaultTarget.restype = SNReturnCode
+        self.SNPS3SetDefaultTarget.restype = SNResult
 
         '''
         SNAPI SNRESULT SNPS3ProcessList(
@@ -175,7 +175,7 @@ class TMAPIExports:
         '''
         self.SNPS3ProcessList = self.TMAPI_DLL.SNPS3ProcessList
         self.SNPS3ProcessList.argtypes = [ c_uint32, POINTER(c_uint32), POINTER(c_uint32) ]
-        self.SNPS3ProcessList.restype = SNReturnCode
+        self.SNPS3ProcessList.restype = SNResult
 
         '''
         SNAPI SNRESULT SNPS3ProcessAttach(
@@ -188,7 +188,7 @@ class TMAPIExports:
         '''
         self.SNPS3ProcessAttach = self.TMAPI_DLL.SNPS3ProcessAttach
         self.SNPS3ProcessAttach.argtypes = [ c_uint32, c_uint32, c_uint32 ]
-        self.SNPS3ProcessAttach.restype = SNReturnCode
+        self.SNPS3ProcessAttach.restype = SNResult
 
         '''
         SNAPI SNRESULT SNPS3ProcessContinue(
@@ -200,7 +200,7 @@ class TMAPIExports:
         '''
         self.SNPS3ProcessContinue = self.TMAPI_DLL.SNPS3ProcessContinue
         self.SNPS3ProcessContinue.argtypes = [ c_uint32, c_uint32 ]
-        self.SNPS3ProcessContinue.restype = SNReturnCode
+        self.SNPS3ProcessContinue.restype = SNResult
 
         '''
         SNAPI SNRESULT SNPS3ProcessStop(
@@ -212,7 +212,7 @@ class TMAPIExports:
         '''
         self.SNPS3ProcessStop = self.TMAPI_DLL.SNPS3ProcessStop
         self.SNPS3ProcessStop.argtypes = [ c_uint32, c_uint32 ]
-        self.SNPS3ProcessStop.restype = SNReturnCode
+        self.SNPS3ProcessStop.restype = SNResult
 
         '''
         SNAPI SNRESULT SNPS3ProcessGetMemory(
@@ -227,7 +227,7 @@ class TMAPIExports:
         '''
         self.SNPS3ProcessGetMemory = self.TMAPI_DLL.SNPS3ProcessGetMemory
         self.SNPS3ProcessGetMemory.argtypes = [ c_uint32, c_uint32, c_uint32, c_uint64, c_uint64, c_int32, POINTER(c_char)  ]
-        self.SNPS3ProcessGetMemory.restype = SNReturnCode
+        self.SNPS3ProcessGetMemory.restype = SNResult
 
         '''
         SNAPI SNRESULT SNPS3ProcessSetMemory(
@@ -242,20 +242,20 @@ class TMAPIExports:
         '''
         self.SNPS3ProcessSetMemory = self.TMAPI_DLL.SNPS3ProcessSetMemory
         self.SNPS3ProcessSetMemory.argtypes = [ c_uint32, c_uint32, c_uint32, c_uint64, c_uint64, c_int32, POINTER(c_char)  ]
-        self.SNPS3ProcessSetMemory.restype = SNReturnCode
+        self.SNPS3ProcessSetMemory.restype = SNResult
 
 class TMAPI:
     def __init__(self):
         self.NativeAPI = TMAPIExports()
         self.PS3TargetIndex = -1
 
-        if self.NativeAPI.SNPS3InitTargetComms() != SNReturnCode.SN_S_OK:
+        if self.NativeAPI.SNPS3InitTargetComms() != SNResult.SN_S_OK:
             raise Exception("SNPS3InitTargetComms() Failed")
 
     def GetDefaultTarget(self):
         DefaultTargetIndex = pointer(c_uint32(0))
 
-        if self.NativeAPI.SNPS3GetDefaultTarget(DefaultTargetIndex) != SNReturnCode.SN_S_OK:
+        if self.NativeAPI.SNPS3GetDefaultTarget(DefaultTargetIndex) != SNResult.SN_S_OK:
             raise Exception("SNPS3InitTargetComms() Failed")
 
         return DefaultTargetIndex[0]
@@ -264,7 +264,7 @@ class TMAPI:
         if TargetIndex == -1:
             TargetIndex = self.GetDefaultTarget()
 
-        if self.NativeAPI.SNPS3ConnectEx(TargetIndex, None, True) not in [ SNReturnCode.SN_S_OK, SNReturnCode.SN_S_CONNECTED ]:
+        if self.NativeAPI.SNPS3ConnectEx(TargetIndex, None, True) not in [ SNResult.SN_S_OK, SNResult.SN_S_CONNECTED ]:
             return False
 
         self.PS3TargetIndex = TargetIndex
@@ -274,7 +274,7 @@ class TMAPI:
     def AttachProcess(self):
         NumProcessesPtr = pointer(c_uint32(0))
 
-        if self.NativeAPI.SNPS3ProcessList(self.PS3TargetIndex, NumProcessesPtr, None) != SNReturnCode.SN_S_OK:
+        if self.NativeAPI.SNPS3ProcessList(self.PS3TargetIndex, NumProcessesPtr, None) != SNResult.SN_S_OK:
             raise Exception("SNPS3ProcessList(): GetNumProcesses Failed")
 
         NumProcesses = NumProcessesPtr.contents.value
@@ -284,15 +284,15 @@ class TMAPI:
 
         ProcessList = (c_uint32*NumProcesses)()
 
-        if self.NativeAPI.SNPS3ProcessList(self.PS3TargetIndex, NumProcessesPtr, ProcessList) != SNReturnCode.SN_S_OK:
+        if self.NativeAPI.SNPS3ProcessList(self.PS3TargetIndex, NumProcessesPtr, ProcessList) != SNResult.SN_S_OK:
             raise Exception("SNPS3ProcessList(): GetProcessInfos Failed")
 
         ProcessID = ProcessList[0]
 
-        if self.NativeAPI.SNPS3ProcessAttach(self.PS3TargetIndex, 0, ProcessID) != SNReturnCode.SN_S_OK:
+        if self.NativeAPI.SNPS3ProcessAttach(self.PS3TargetIndex, 0, ProcessID) != SNResult.SN_S_OK:
             return False
 
-        if self.NativeAPI.SNPS3ProcessContinue(self.PS3TargetIndex, ProcessID) != SNReturnCode.SN_S_OK:     
+        if self.NativeAPI.SNPS3ProcessContinue(self.PS3TargetIndex, ProcessID) != SNResult.SN_S_OK:     
             raise Exception("SNPS3ProcessContinue() Failed")
 
         self.ProcessID = ProcessID
