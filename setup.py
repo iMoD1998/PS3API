@@ -1,4 +1,8 @@
+import sys
 from setuptools import setup, find_packages
+
+if sys.platform != "win32":
+      raise Exception("ps3api only supports 32 bit windows.")
 
 setup(name='ps3api',
       version='0.1',
