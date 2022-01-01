@@ -154,35 +154,6 @@ class RPCPayload:
     def SetOriginalInstructions(Instructions):
         RPCPayload.SetPayloadData(RPCPayload.OriginalInstructionsOffset, Instructions)
 
-def RPCAddIntValue(Context, Value):
-    Context.AddGPRegister(Value)
-
-def RPCAddFloatValue(Context, Value):
-    Context.AddFPRegister(Value)
-
-def RPCAddString(Context, Value):
-    Value += "\0"
-    Context.AddGPRegister(Context.AddArgData(Value.encode("ascii")))
-
-def RPCAddWString(Context, Value):
-    Value += "\0"
-    Context.AddGPRegister(Context.AddArgData(Value.encode("utf-16")))
-
-RPCCTypeBasicTypes = {
-    c_int8:    RPCAddIntValue,
-    c_int16:   RPCAddIntValue,
-    c_int32:   RPCAddIntValue,
-    c_int64:   RPCAddIntValue,
-    c_uint8:   RPCAddIntValue,
-    c_uint16:  RPCAddIntValue,
-    c_uint32:  RPCAddIntValue,
-    c_uint64:  RPCAddIntValue,
-    c_void_p:  RPCAddIntValue,
-    c_float:   RPCAddFloatValue,
-    c_char_p:  RPCAddString,
-    c_wchar_p: RPCAddWString
-}
-
 class RPCCallContext:
     #
     # Call context offsets and info (see RPCPayload.s)
@@ -204,26 +175,26 @@ class RPCCallContext:
     def GetFPRegisterOffset(RegisterIndex):
         return RPCCallContext.FPRegisterArrayOffset + (0x4 * RegisterIndex)
 
-    def __init__(self, ArgsAddress, ArgDataAddress):
-        self.ArgsAddress        = ArgsAddress
+    def __init__(self, ContextAddress, ArgDataAddress):
+        self.ContextAddress     = ContextAddress
         self.ArgDataAddress     = ArgDataAddress
-        self.ArgumentsBuffer    = bytearray([ 0x0 ] * 0x100)
-        self.ArgumentsData      = bytearray()
+        self.ContextBuffer      = bytearray([ 0x0 ] * 0x100)
+        self.ArgumentsBuffer    = bytearray()
         self.ArgumentIntIndex   = 0
         self.ArgumentFloatIndex = 0
     
     def SetCallType(self, Address):
-        self.ArgumentsBuffer[RPCCallContext.CallTypeOffset:RPCCallContext.CallTypeOffset+4] = PackInt32BE(Address)
+        self.ContextBuffer[RPCCallContext.CallTypeOffset:RPCCallContext.CallTypeOffset+4] = PackInt32BE(Address)
 
     def SetCallTOCAddress(self, Address):
-        self.ArgumentsBuffer[RPCCallContext.CallTOCOffset:RPCCallContext.CallTOCOffset+8] = PackInt64BE(Address)
+        self.ContextBuffer[RPCCallContext.CallTOCOffset:RPCCallContext.CallTOCOffset+8] = PackInt64BE(Address)
     
     def SetCallAddress(self, Address):
-        self.ArgumentsBuffer[RPCCallContext.CallAddressOffset:RPCCallContext.CallAddressOffset+8] = PackInt64BE(Address)
+        self.ContextBuffer[RPCCallContext.CallAddressOffset:RPCCallContext.CallAddressOffset+8] = PackInt64BE(Address)
 
     def SetGPRegister(self, RegIndex, Value):
         RegOffset = RPCCallContext.GetGPRegisterOffset(RegIndex)
-        self.ArgumentsBuffer[RegOffset:RegOffset+8] = PackInt64BE(Value)
+        self.ContextBuffer[RegOffset:RegOffset+8] = PackInt64BE(Value)
 
     def AddGPRegister(self, Value):
         if self.ArgumentIntIndex > 9:
@@ -234,7 +205,7 @@ class RPCCallContext:
 
     def SetFPRegister(self, RegIndex, Value):
         RegOffset = RPCCallContext.GetFPRegisterOffset(RegIndex)
-        self.ArgumentsBuffer[RegOffset:RegOffset+4] = PackIntFloatBE(Value)
+        self.ContextBuffer[RegOffset:RegOffset+4] = PackIntFloatBE(Value)
 
     def AddFPRegister(self, Value):
         if self.ArgumentFloatIndex > 9:
@@ -244,11 +215,9 @@ class RPCCallContext:
         self.ArgumentFloatIndex += 1
 
     def AddArgData(self, Data):
-        DataBeginOffset = len(self.ArgumentsData)
-        self.ArgumentsData.extend(Data)
+        DataBeginOffset = len(self.ArgumentsBuffer)
+        self.ArgumentsBuffer.extend(Data)
         return self.ArgDataAddress + DataBeginOffset
-
-from pwn import *
 
 class RPCFunction:
     #
@@ -272,7 +241,7 @@ class RPCFunction:
         ArgCount    = len(Args)
         CallContext = RPCCallContext(RPC.FreeSpaceAddress, RPC.ArgDataSpaceAddress)
 
-        if ArgCount != len(self.ArgTypes):
+        if self.ArgTypes != None and ArgCount != len(self.ArgTypes):
             raise Exception('Wrong number of args expected: ' + str(len(self.ArgTypes)))
 
         for i in range(0, ArgCount):
@@ -282,10 +251,43 @@ class RPCFunction:
             #
             # TODO: Support more complicated types, structures etc.
             #
-            if issubclass(self.ArgTypes[i], _SimpleCData):
-                RPCCTypeBasicTypes[self.ArgTypes[i]](CallContext, ArgValue)
-            #elif issubclass(self.argtypes[i], _Pointer):
 
+            #
+            # Simple data types, uint8, uint16 etc.
+            # C strings are also included in this :/
+            #
+            if issubclass(ArgType, _SimpleCData):
+                AddIntArg     = lambda Value: CallContext.AddGPRegister(Value)
+                AddFloatArg   = lambda Value: CallContext.AddFPRegister(float(Value))
+                AddStringArg  = lambda Value: CallContext.AddGPRegister(CallContext.AddArgData(Value.encode("ascii")  + b"\x00"))
+                AddWStringArg = lambda Value: CallContext.AddGPRegister(CallContext.AddArgData(Value.encode("utf-16") + b"\x00"))
+
+                RPCCTypeBasicTypes = {
+                    c_int8:   AddIntArg, c_int16:  AddIntArg, c_int32:  AddIntArg,  c_int64:  AddIntArg, 
+                    c_uint8:  AddIntArg, c_uint16: AddIntArg, c_uint32: AddIntArg,  c_uint64: AddIntArg,
+                    
+                    c_float:  AddFloatArg,  c_double: AddFloatArg, 
+                    
+                    c_char_p: AddStringArg, c_wchar_p: AddWStringArg, c_void_p: AddIntArg
+                }
+
+                RPCCTypeBasicTypes[ArgType](ArgValue)
+
+            #
+            # Add contents of pointer to data and then set register to pointer.
+            # TODO: also support structures here.
+            #
+            elif issubclass(ArgType, _Pointer):
+                if issubclass(ArgType._type_, _SimpleCData):
+                    WantedType = ArgType._type_.__ctype_be__
+                    Bytes      = bytearray(WantedType(ArgValue))
+
+                    CallContext.AddGPRegister(Context.AddArgData(Bytes))
+
+            # elif issubclass(ArgType, Array):
+            #         WantedType = ARRAY(ArgType._type_.__ctype_be__, ArgType._length_)
+            #         Bytes      = bytearray(WantedType(ArgValue))
+            
         #
         # If we are doing a syscall set r11 to the syscall index.
         #
@@ -298,19 +300,16 @@ class RPCFunction:
 
         CallContext.SetCallType(self.CallType)
 
-        FinalArgumentData = CallContext.ArgumentsBuffer + CallContext.ArgumentsData
-
-        print(hexdump(FinalArgumentData))
-
         #
         # Write call context.
         #
-        self.API.WriteMemory(RPC.FreeSpaceAddress, FinalArgumentData)
+        self.API.WriteMemory(CallContext.ArgDataAddress, CallContext.ArgumentsBuffer)
+        self.API.WriteMemory(CallContext.ContextAddress, CallContext.ContextBuffer)
 
         #
         # Wait for function to execute.
         #
-        while self.API.ReadInt32(RPC.FreeSpaceAddress + RPCCallContext.CallAddressOffset) != 0:
+        while self.API.ReadInt64(CallContext.ContextAddress + RPCCallContext.CallAddressOffset) != 0:
             pass
 
         #
@@ -318,9 +317,9 @@ class RPCFunction:
         #
         if self.ReturnType:           
             if self.ReturnType == c_float:
-                return self.API.ReadFloat(RPC.FreeSpaceAddress + RPCCallContext.ReturnFPOffset)
+                return self.API.ReadFloat(CallContext.ContextAddress + RPCCallContext.ReturnFPOffset)
             else:
-                return self.API.ReadInt64(RPC.FreeSpaceAddress + RPCCallContext.ReturnGPOffset)
+                return self.API.ReadInt64(CallContext.ContextAddress + RPCCallContext.ReturnGPOffset)
         
         return None
 
