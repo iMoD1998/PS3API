@@ -320,11 +320,21 @@ class RPCFunction:
         #
         # TODO: Support complicated return types??
         #
-        if self.ReturnType:           
+        if self.ReturnType != None:           
             if self.ReturnType == c_float:
                 return self.API.ReadFloat(CallContext.ContextAddress + RPCCallContext.ReturnFPOffset)
-            else:
-                return self.API.ReadInt64(CallContext.ContextAddress + RPCCallContext.ReturnGPOffset)
+            
+            elif self.ReturnType in [ c_uint64, c_int64, c_ulonglong, c_longlong ]:
+                return self.API.ReadInt64((CallContext.ContextAddress + RPCCallContext.ReturnGPOffset))
+            
+            elif self.ReturnType in [ c_uint32, c_int32, c_ulong, c_long ]:
+                return self.API.ReadInt32((CallContext.ContextAddress + RPCCallContext.ReturnGPOffset) + 4)
+
+            elif self.ReturnType in [ c_uint16, c_int16, c_short, c_ushort ]:
+                return self.API.ReadInt16((CallContext.ContextAddress + RPCCallContext.ReturnGPOffset) + 6)
+
+            elif self.ReturnType in [ c_uint8, c_int8, c_char, c_byte ]:
+                return self.API.ReadInt8((CallContext.ContextAddress + RPCCallContext.ReturnGPOffset) + 7)
         
         return None
 
