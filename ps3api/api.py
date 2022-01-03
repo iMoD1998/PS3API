@@ -1,6 +1,7 @@
 from .tmapi import TMAPI
 from .ccapi import CCAPI
 from .rpc import RPCFunction, RPC
+from .syscalls import SystemCallDefinitions
 from .memutils import *
 
 class PS3API:
@@ -39,4 +40,5 @@ class PS3API:
         self.WriteDouble = WriteDouble(self.WriteMemory)
         self.WriteString = WriteString(self.WriteMemory)
 
-        self.RPC = RPC(self)
+        self.RPC      = RPC(self)
+        self.Syscalls = SystemCallDefinitions(self.RPC)
