@@ -1,7 +1,8 @@
 from ctypes import *
 from .common import *
+from enum import IntEnum
 
-class SyscallIndex:
+class SyscallIndex(IntEnum):
     SYS_PROCESS_GETPID = 1
     SYS_PROCESS_WAIT_FOR_CHILD = 2
     SYS_PROCESS_EXIT = 3
@@ -363,7 +364,7 @@ class SystemCallDefinitions:
         Get the process id
         """
         self.sys_process_getpid = RPC.SystemCall(SyscallIndex.SYS_PROCESS_GETPID)
-        self.sys_process_getpid.ReturnType = [ c_ulong ]
+        self.sys_process_getpid.ReturnType = c_ulong
 
         """
         void sys_process_exit(
@@ -374,7 +375,7 @@ class SystemCallDefinitions:
         """
         self.sys_process_exit = RPC.SystemCall(SyscallIndex.SYS_PROCESS_EXIT)
         self.sys_process_exit.ArgTypes = [ c_ulong ]
-        self.sys_process_exit.ReturnType = [ c_ulong ]
+        self.sys_process_exit.ReturnType = c_ulong
 
         """
         int sys_process_get_status(
@@ -385,7 +386,7 @@ class SystemCallDefinitions:
         """
         self.sys_process_get_status = RPC.SystemCall(SyscallIndex.SYS_PROCESS_GET_STATUS)
         self.sys_process_get_status.ArgTypes = [ c_ulong ]
-        self.sys_process_get_status.ReturnType = [ c_ulong ]
+        self.sys_process_get_status.ReturnType = c_ulong
 
         """
         int sys_process_get_number_of_object(
@@ -397,7 +398,7 @@ class SystemCallDefinitions:
         """
         self.sys_process_get_number_of_object = RPC.SystemCall(SyscallIndex.SYS_PROCESS_GET_NUMBER_OF_OBJECT)
         self.sys_process_get_number_of_object.ArgTypes = [ c_uint32, POINTER(c_uint32) ]
-        self.sys_process_get_number_of_object.ReturnType = [ c_int32 ]
+        self.sys_process_get_number_of_object.ReturnType = c_int32
 
         """
         int sys_process_get_sdk_version(
@@ -409,7 +410,7 @@ class SystemCallDefinitions:
         """
         self.sys_process_get_sdk_version = RPC.SystemCall(SyscallIndex.SYS_PROCESS_GET_SDK_VERSION)
         self.sys_process_get_sdk_version.ArgTypes = [ c_uint32, POINTER(c_uint32) ]
-        self.sys_process_get_sdk_version.ReturnType = [ c_int32 ]
+        self.sys_process_get_sdk_version.ReturnType = c_int32
         
         """
         int sys_console_write(
@@ -421,7 +422,7 @@ class SystemCallDefinitions:
         """
         self.sys_console_write = RPC.SystemCall(SyscallIndex.SYS_CONSOLE_WRITE)
         self.sys_console_write.ArgTypes = [ c_char_p, c_uint32 ]
-        self.sys_console_write.ReturnType = [ c_ulong ]
+        self.sys_console_write.ReturnType = c_ulong
 
         """
         int sys_tty_read(
@@ -460,7 +461,7 @@ class SystemCallDefinitions:
         """
         self.sys_prx_load_module = RPC.SystemCall(SyscallIndex._SYS_PRX_LOAD_MODULE)
         self.sys_prx_load_module.ArgTypes = [ c_char_p, c_uint64, POINTER(sys_prx_load_module_option_t) ]
-        self.sys_prx_load_module.ReturnType = [ c_uint32 ]
+        self.sys_prx_load_module.ReturnType = c_uint32
 
         """
         int sys_prx_start_module(
@@ -476,7 +477,7 @@ class SystemCallDefinitions:
         """
         self.sys_prx_start_module = RPC.SystemCall(SyscallIndex._SYS_PRX_START_MODULE)
         self.sys_prx_start_module.ArgTypes = [ c_int32, c_uint64, c_void_p, POINTER(c_uint32), POINTER(sys_prx_start_module_option_t) ]
-        self.sys_prx_start_module.ReturnType = [ c_uint32 ]
+        self.sys_prx_start_module.ReturnType = c_uint32
 
         """
         int sys_prx_stop_module(
@@ -491,4 +492,4 @@ class SystemCallDefinitions:
         """
         self.sys_prx_stop_module = RPC.SystemCall(SyscallIndex._SYS_PRX_STOP_MODULE)
         self.sys_prx_stop_module.ArgTypes = [ c_int32, c_uint64, c_void_p, POINTER(c_uint32), POINTER(sys_prx_stop_module_option_t) ]
-        self.sys_prx_stop_module.ReturnType = [ c_uint32 ]
+        self.sys_prx_stop_module.ReturnType = c_uint32
