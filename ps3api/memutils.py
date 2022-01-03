@@ -3,19 +3,33 @@ import struct
 '''
 Byte Conversions
 '''
-PackInt8BE = struct.Struct('>B').pack
-PackInt16BE = struct.Struct('>H').pack
-PackInt32BE = struct.Struct('>L').pack
-PackInt64BE = struct.Struct('>Q').pack
-PackFloatBE = struct.Struct('>f').pack
+PackInt8BE   = struct.Struct('>B').pack
+PackInt16BE  = struct.Struct('>H').pack
+PackInt32BE  = struct.Struct('>L').pack
+PackInt64BE  = struct.Struct('>Q').pack
+PackFloatBE  = struct.Struct('>f').pack
 PackDoubleBE = struct.Struct('>d').pack
 
-UnpackInt8BE = struct.Struct('>B').unpack
-UnpackInt16BE = struct.Struct('>H').unpack
-UnpackInt32BE = struct.Struct('>L').unpack
-UnpackInt64BE = struct.Struct('>Q').unpack
-UnpackFloatBE = struct.Struct('>f').unpack
+UnpackInt8BE   = struct.Struct('>B').unpack
+UnpackInt16BE  = struct.Struct('>H').unpack
+UnpackInt32BE  = struct.Struct('>L').unpack
+UnpackInt64BE  = struct.Struct('>Q').unpack
+UnpackFloatBE  = struct.Struct('>f').unpack
 UnpackDoubleBE = struct.Struct('>d').unpack
+
+PackInt8LE   = struct.Struct('<B').pack
+PackInt16LE  = struct.Struct('<H').pack
+PackInt32LE  = struct.Struct('<L').pack
+PackInt64LE  = struct.Struct('<Q').pack
+PackFloatLE  = struct.Struct('<f').pack
+PackDoubleLE = struct.Struct('<d').pack
+
+UnpackInt8LE   = struct.Struct('<B').unpack
+UnpackInt16LE  = struct.Struct('<H').unpack
+UnpackInt32LE  = struct.Struct('<L').unpack
+UnpackInt64LE  = struct.Struct('<Q').unpack
+UnpackFloatLE  = struct.Struct('<f').unpack
+UnpackDoubleLE = struct.Struct('<d').unpack
 
 def ReadInt8(ReadMemory):
     return lambda Address: UnpackInt8BE(ReadMemory(Address, 1))[0]
