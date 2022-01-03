@@ -364,7 +364,18 @@ class SystemCallDefinitions:
         Get the process id
         """
         self.sys_process_getpid = RPC.SystemCall(SyscallIndex.SYS_PROCESS_GETPID)
-        self.sys_process_getpid.ReturnType = c_ulong
+        self.sys_process_getpid.ReturnType = c_uint32
+
+        """ 
+        int sys_process_wait_for_child(
+            sys_pid_t pid,
+            uint32_t *status,
+            uint32_t unknown
+        );
+        """
+        self.sys_process_wait_for_child = RPC.SystemCall(SyscallIndex.SYS_PROCESS_WAIT_FOR_CHILD)
+        self.sys_process_wait_for_child.ArgTypes = [ c_uint32, POINTER(c_uint32), c_uint32 ]
+        self.sys_process_wait_for_child.ReturnType = c_uint32
 
         """
         void sys_process_exit(
@@ -374,8 +385,8 @@ class SystemCallDefinitions:
         Terminate a process
         """
         self.sys_process_exit = RPC.SystemCall(SyscallIndex.SYS_PROCESS_EXIT)
-        self.sys_process_exit.ArgTypes = [ c_ulong ]
-        self.sys_process_exit.ReturnType = c_ulong
+        self.sys_process_exit.ArgTypes = [ c_uint32 ]
+        self.sys_process_exit.ReturnType = c_uint32
 
         """
         int sys_process_get_status(
@@ -385,8 +396,8 @@ class SystemCallDefinitions:
         Get process status
         """
         self.sys_process_get_status = RPC.SystemCall(SyscallIndex.SYS_PROCESS_GET_STATUS)
-        self.sys_process_get_status.ArgTypes = [ c_ulong ]
-        self.sys_process_get_status.ReturnType = c_ulong
+        self.sys_process_get_status.ArgTypes = [ c_uint32 ]
+        self.sys_process_get_status.ReturnType = c_uint32
 
         """
         int sys_process_get_number_of_object(
@@ -401,6 +412,42 @@ class SystemCallDefinitions:
         self.sys_process_get_number_of_object.ReturnType = c_int32
 
         """
+        int sys_process_get_id(
+            uint32_t object,
+            uint32_t *buff,
+            size_t size,
+            size_t *set_size
+        );
+
+        Obtain ID of specified object
+        """
+        self.sys_process_get_id = RPC.SystemCall(SyscallIndex.SYS_PROCESS_GET_ID)
+        self.sys_process_get_id.ArgTypes = [ c_uint32, POINTER(c_uint32), c_uint32, POINTER(c_uint32) ]
+        self.sys_process_get_id.ReturnType = c_int32
+
+        """
+        sys_pid_t sys_process_getppid(
+            void
+        );
+
+        Get the parent process id
+        """
+        self.sys_process_getppid = RPC.SystemCall(SyscallIndex.SYS_PROCESS_GETPPID)
+        self.sys_process_getppid.ArgTypes = [ ]
+        self.sys_process_getppid.ReturnType = c_uint32
+
+        """
+        int sys_process_kill(
+            sys_pid_t pid
+        )
+
+        Get process status
+        """
+        self.sys_process_kill = RPC.SystemCall(SyscallIndex.SYS_PROCESS_KILL)
+        self.sys_process_kill.ArgTypes = [ c_uint32 ]
+        self.sys_process_kill.ReturnType = c_int32
+
+        """
         int sys_process_get_sdk_version(
             sys_pid_t pid,
             uint32_t* sdk_version
@@ -413,6 +460,27 @@ class SystemCallDefinitions:
         self.sys_process_get_sdk_version.ReturnType = c_int32
         
         """
+        sys_addr_t sys_process_get_ppu_guid(
+            void
+        );
+
+        Obtain PPU GUID information
+        """
+        self.sys_process_get_ppu_guid = RPC.SystemCall(SyscallIndex.SYS_PROCESS_GET_PPU_GUID)
+        self.sys_process_get_ppu_guid.ReturnType = POINTER(c_uint32)
+
+        """
+        int sys_ppu_thread_exit(
+            uint64_t errorcode
+        )
+
+        Exit a PPU thread
+        """
+        self.sys_ppu_thread_exit = RPC.SystemCall(SyscallIndex.SYS_PPU_THREAD_EXIT)
+        self.sys_ppu_thread_exit.ArgTypes = [ c_int32 ]
+        self.sys_ppu_thread_exit.ReturnType = c_int32
+
+        """
         int sys_console_write(
             const char *s,
             uint32_t len
@@ -422,7 +490,7 @@ class SystemCallDefinitions:
         """
         self.sys_console_write = RPC.SystemCall(SyscallIndex.SYS_CONSOLE_WRITE)
         self.sys_console_write.ArgTypes = [ c_char_p, c_uint32 ]
-        self.sys_console_write.ReturnType = c_ulong
+        self.sys_console_write.ReturnType = c_uint32
 
         """
         int sys_tty_read(
