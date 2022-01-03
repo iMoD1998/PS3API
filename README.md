@@ -11,7 +11,7 @@ from ps3api import PS3API
 
 PS3 = PS3API(PS3API.API_TMAPI)
 
-if PS3.ConnectTarget(PS3.API.GetDefaultTarget()) == False:
+if PS3.ConnectTarget(PS3.GetDefaultTarget()) == False:
 	raise Exception("Failed to connect to PS3.")
 
 if PS3.AttachProcess() == False:
