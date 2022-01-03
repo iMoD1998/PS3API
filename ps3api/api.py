@@ -13,24 +13,29 @@ class PS3API:
         else:
             self.API = CCAPI()
 
+        # 
+        # Base API implmented functions.
+        # 
         self.ConnectTarget = self.API.ConnectTarget
         self.AttachProcess = self.API.AttachProcess
-        self.ReadMemory = self.API.ReadMemory
-        self.WriteMemory = self.API.WriteMemory
+        self.ReadMemory    = self.API.ReadMemory
+        self.WriteMemory   = self.API.WriteMemory
 
-        self.ReadInt8 = ReadInt8(self.ReadMemory)
-        self.ReadInt16 = ReadInt16(self.ReadMemory)
-        self.ReadInt32 = ReadInt32(self.ReadMemory)
-        self.ReadInt64 = ReadInt64(self.ReadMemory)
-        self.ReadFloat = ReadFloat(self.ReadMemory)
-        self.ReadDouble = ReadDouble(self.ReadMemory)
-        self.ReadString = ReadString(self.ReadMemory)
-
-        self.WriteInt8 = WriteInt8(self.WriteMemory)
-        self.WriteInt16 = WriteInt16(self.WriteMemory)
-        self.WriteInt32 = WriteInt32(self.WriteMemory)
-        self.WriteInt64 = WriteInt64(self.WriteMemory)
-        self.WriteFloat = WriteFloat(self.WriteMemory)
+        #
+        # Memory reading/writing extensions.
+        #
+        self.ReadInt8    = ReadInt8(self.ReadMemory)
+        self.ReadInt16   = ReadInt16(self.ReadMemory)
+        self.ReadInt32   = ReadInt32(self.ReadMemory)
+        self.ReadInt64   = ReadInt64(self.ReadMemory)
+        self.ReadFloat   = ReadFloat(self.ReadMemory)
+        self.ReadDouble  = ReadDouble(self.ReadMemory)
+        self.ReadString  = ReadString(self.ReadMemory)
+        self.WriteInt8   = WriteInt8(self.WriteMemory)
+        self.WriteInt16  = WriteInt16(self.WriteMemory)
+        self.WriteInt32  = WriteInt32(self.WriteMemory)
+        self.WriteInt64  = WriteInt64(self.WriteMemory)
+        self.WriteFloat  = WriteFloat(self.WriteMemory)
         self.WriteDouble = WriteDouble(self.WriteMemory)
         self.WriteString = WriteString(self.WriteMemory)
 
