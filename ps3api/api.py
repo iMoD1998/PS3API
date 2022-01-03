@@ -8,6 +8,8 @@ class PS3API:
     API_TMAPI = 0
     API_CCAPI = 1
 
+    # Test
+
     def __init__(self, API=API_TMAPI):
         if API == PS3API.API_TMAPI:
             self.API = TMAPI()
