@@ -341,9 +341,9 @@ class RPC:
 
     def __init__(self, API):
         self.API = API
-        self.Function   = lambda Address, TOC = 0: RPCFunction(API, Address, TOC, RPCFunction.CALL_TYPE_FUNCTION if TOC == 0 else RPCFunction.CALL_TYPE_FUNCTION_SET_TOC)
+        self.Function    = lambda Address, TOC = 0: RPCFunction(API, Address, TOC, RPCFunction.CALL_TYPE_FUNCTION if TOC == 0 else RPCFunction.CALL_TYPE_FUNCTION_SET_TOC)
         self.OPDFunction = lambda Address: RPCFunction(API, Address, 0, RPCFunction.CALL_TYPE_FUNCTION_OPD_ENTRY)
-        self.SystemCall = lambda Index: RPCFunction(API, Index, 0, RPCFunction.CALL_TYPE_SYS_CALL)
+        self.SystemCall  = lambda Index: RPCFunction(API, Index, 0, RPCFunction.CALL_TYPE_SYS_CALL)
         self.OriginalInstructions = bytearray()
     
     def Enable(self, HookAddress):
