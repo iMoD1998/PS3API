@@ -1,14 +1,25 @@
-import sys
-from setuptools import setup, find_packages
+#!/usr/bin/env python
 
-if sys.platform != "win32":
-      raise Exception("ps3api only supports 32 bit windows.")
+# Based on: https://stackoverflow.com/a/62983901/1806760
 
-setup(name='ps3api',
-      version='0.1',
-      description='Python module for interacting with PS3 using CCAPI or TMAPI.',
-      url='http://github.com/iMoD1998/PS3API',
-      author='iMoD1998',
-      author_email='imod1998@protonmail.com',
-      license='MIT',
-      packages=find_packages())
+import setuptools
+import os
+
+if __name__ == "__main__":
+    ref_name = os.getenv("GITHUB_REF_NAME")
+    if ref_name:
+        from pkg_resources import parse_version
+        try:
+            parse_version(ref_name)
+            print(f"injecting version = {ref_name} into setup.cfg")
+            with open("setup.cfg", "r") as f:
+                lines = f.readlines()
+            with open("setup.cfg", "w") as f:
+                for line in lines:
+                    if line.startswith("version = "):
+                        line = f"version = {ref_name}\n"
+                    f.write(line)
+        except:
+            pass
+
+    setuptools.setup()
