@@ -1,6 +1,8 @@
 name: Publish to PyPI
 
-on: [push, pull_request]
+on:
+  release:
+    types: [published]
 
 jobs:
   publish:
@@ -18,12 +20,9 @@ jobs:
       - name: Package
         run: |
           python setup.py sdist
-      - name: Publish to PyPI
+
+      - name: Publish to Test PyPI
         uses: pypa/gh-action-pypi-publish@master
         with:
+          repository_url: https://test.pypi.org/legacy/
           password: ${{ secrets.TEST_PYPI_API_TOKEN }}
-
-      - name: Release
-        uses: softprops/action-gh-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
