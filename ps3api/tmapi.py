@@ -248,9 +248,14 @@ class TMAPI:
     def __init__(self):
         self.NativeAPI = TMAPIExports()
         self.PS3TargetIndex = -1
+        self.IsConnected = False
 
         if self.NativeAPI.SNPS3InitTargetComms() != SNResult.SN_S_OK:
             raise Exception("SNPS3InitTargetComms() Failed")
+
+    def ThrowIfNotConnected(self):
+        if self.IsConnected == False:
+            raise Exception("Error: Not Connected to PS3")
 
     def GetDefaultTarget(self):
         DefaultTargetIndex = pointer(c_uint32(0))
@@ -261,6 +266,8 @@ class TMAPI:
         return DefaultTargetIndex[0]
 
     def ConnectTarget(self, TargetIndex=-1):
+        self.IsConnected = False
+
         if TargetIndex == -1:
             TargetIndex = self.GetDefaultTarget()
 
@@ -269,9 +276,13 @@ class TMAPI:
 
         self.PS3TargetIndex = TargetIndex
 
+        self.IsConnected = True
+
         return True
 
-    def AttachProcess(self):
+    def GetProcessList(self):
+        self.ThrowIfNotConnected()
+
         NumProcessesPtr = pointer(c_uint32(0))
 
         if self.NativeAPI.SNPS3ProcessList(self.PS3TargetIndex, NumProcessesPtr, None) != SNResult.SN_S_OK:
@@ -287,7 +298,18 @@ class TMAPI:
         if self.NativeAPI.SNPS3ProcessList(self.PS3TargetIndex, NumProcessesPtr, ProcessList) != SNResult.SN_S_OK:
             raise Exception("SNPS3ProcessList(): GetProcessInfos Failed")
 
-        ProcessID = ProcessList[0]
+        return list(ProcessList)
+
+    def AttachProcess(self, ProcessID=-1):
+        self.ThrowIfNotConnected()
+
+        if ProcessID == -1:
+            ProcessList = self.GetProcessList()
+
+            if len(ProcessList) == 0:
+                return False
+
+            ProcessID = ProcessList[0]
 
         if self.NativeAPI.SNPS3ProcessAttach(self.PS3TargetIndex, 0, ProcessID) != SNResult.SN_S_OK:
             return False
@@ -300,6 +322,8 @@ class TMAPI:
         return True
 
     def ReadMemory(self, Address, Size):
+        self.ThrowIfNotConnected()
+
         MemoryBuffer = (c_char * Size)()
 
         self.NativeAPI.SNPS3ProcessGetMemory(self.PS3TargetIndex, 0, self.ProcessID, 0, Address, Size, MemoryBuffer)
@@ -307,6 +331,8 @@ class TMAPI:
         return bytes(MemoryBuffer)
 
     def WriteMemory(self, Address, Bytes):
+        self.ThrowIfNotConnected()
+
         WriteBuffer = (c_char * len(Bytes)).from_buffer(bytearray(Bytes))
         
         return self.NativeAPI.SNPS3ProcessSetMemory(self.PS3TargetIndex, 0, self.ProcessID, 0, Address, len(Bytes), WriteBuffer)
