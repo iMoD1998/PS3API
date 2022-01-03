@@ -254,19 +254,19 @@ class CCAPIExports:
 
 class CCAPI:
     def __init__(self):
-        pass
+        raise Exception("CCAPI Not Implemented!!")
 
     def GetDefaultTarget(self):
-        pass
+        raise Exception("CCAPI Not Implemented!!")
 
     def ConnectTarget(self, TargetIndex):
-        pass
+        raise Exception("CCAPI Not Implemented!!")
 
     def AttachProcess(self):
-        pass
+        raise Exception("CCAPI Not Implemented!!")
 
     def ReadMemory(self, Address, Size):
-        pass
+        raise Exception("CCAPI Not Implemented!!")
 
     def WriteMemory(self, Address, Bytes):
-        pass
+        raise Exception("CCAPI Not Implemented!!")
