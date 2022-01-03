@@ -6,6 +6,11 @@ from .memutils import *
 
 class RPCPayload:
     #
+    # The place where the RPC payload will be written to.
+    #
+    LoadAddress = 0x10000
+
+    #
     # RPC shelldcode/payload that will be used to call functions (See RPCPayload.s)
     #
     PayloadData = bytearray(
@@ -372,7 +377,7 @@ class RPC:
         #
         # Write payload at ELF header because retarded page prot
         #
-        self.API.WriteMemory(0x10000, RPCPayload.PayloadData)
+        self.API.WriteMemory(RPCPayload.LoadAddress, RPCPayload.PayloadData)
 
         #
         # Write branch for hook.

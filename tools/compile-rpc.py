@@ -4,12 +4,13 @@ import sys
 from keystone import * 
 from pwn import *
 
-Keystone = Ks(KS_ARCH_PPC, KS_MODE_64 | KS_MODE_BIG_ENDIAN)
+from ps3api import RPCPayload
+from ps3api.memutils import *
 
-UnpackInt32BE = struct.Struct('>L').unpack
+Keystone = Ks(KS_ARCH_PPC, KS_MODE_PPC64 | KS_MODE_BIG_ENDIAN)
 
 with open(sys.argv[1], 'r') as asmfile:
-    Encoding, Count = Keystone.asm(asmfile.read())
+    Encoding, Count = Keystone.asm(asmfile.read(), RPCPayload.LoadAddress)
     MachineCode     = bytes(Encoding)
 
     with open("RPCPayload.bin", "wb") as file:
