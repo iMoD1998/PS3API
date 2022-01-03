@@ -17,10 +17,11 @@ class PS3API:
         # 
         # Base API implmented functions.
         # 
-        self.ConnectTarget = self.API.ConnectTarget
-        self.AttachProcess = self.API.AttachProcess
-        self.ReadMemory    = self.API.ReadMemory
-        self.WriteMemory   = self.API.WriteMemory
+        self.GetDefaultTarget = self.API.GetDefaultTarget
+        self.ConnectTarget    = self.API.ConnectTarget
+        self.AttachProcess    = self.API.AttachProcess
+        self.ReadMemory       = self.API.ReadMemory
+        self.WriteMemory      = self.API.WriteMemory
 
         #
         # Memory reading/writing extensions.
