@@ -2,7 +2,7 @@
 PS3 API for TMAPI and CCAPI in python.
 
 ## **Note**
-This only works on 32 bit python as TMAPI and CCAPI are 32 bit DLLs.
+*This only works on 32 bit python as TMAPI and CCAPI are 32 bit DLLs.*
 
 ## Examples
 ### Connecting and Attaching
@@ -43,6 +43,7 @@ PS3.WriteString(Address, Value, Encoding="ascii")
 ```
 
 ### Remote Procedure Call (RPC)
+#### Function
 ```python
 PS3.RPC.Enable(0x02539F8) # MW2 1.14
 
@@ -51,13 +52,24 @@ CG_BoldGameMessage.argtypes = [ ctypes.c_ulong, ctypes.c_char_p ]
 
 CG_BoldGameMessage(0, "Hello World!")
 ```
+#### System Call
+```python
+# Define your own
+sys_process_getpid = PS3.RPC.SystemCall(SyscallIndex.SYS_PROCESS_GETPID)
+sys_process_getpid.ReturnType = [ c_ulong ]
+
+print(sys_process_getpid())
+
+# Use builtin definitions
+PS3.RPC.Syscalls.sys_process_getpid()
+```
 
 ### Interacting With C API
 ```python
 >>> PS3.API.NativeAPI.SNPS3InitTargetComms()
 <SNReturnCode.SN_S_OK: 0>
 ```
-or 
+#### Alternatively
 ```python
 >>> from ps3api import TMAPIExports
 >>> C_API = TMAPIExports()
