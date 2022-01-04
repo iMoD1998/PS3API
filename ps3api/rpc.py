@@ -287,7 +287,7 @@ class RPCFunction:
                     WantedType = ArgType._type_.__ctype_be__
                     Bytes      = bytearray(WantedType(ArgValue))
 
-                    CallContext.AddGPRegister(Context.AddArgData(Bytes))
+                    CallContext.AddGPRegister(CallContext.AddArgData(Bytes))
 
             # elif issubclass(ArgType, Array):
             #         WantedType = ARRAY(ArgType._type_.__ctype_be__, ArgType._length_)
