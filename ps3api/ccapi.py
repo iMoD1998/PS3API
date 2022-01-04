@@ -54,7 +54,7 @@ class NotifyIcon(CEnum):
     NOTIFY_TROPHY3 = (18)
     NOTIFY_TROPHY4 = (19)
 
-class StatusLed(CEnum):
+class ConsoleType(CEnum):
     UNK = (0)
     CEX = (1)
     DEX = (2)
