@@ -1,6 +1,11 @@
 # PS3API
 PS3 API for TMAPI and CCAPI in python.
 
+![PyPI - Python Version](https://img.shields.io/pypi/pyversions/ps3api)
+[![Downloads](https://pepy.tech/badge/ps3api)](https://pepy.tech/project/ps3api)
+![GitHub commits since latest release (by date)](https://img.shields.io/github/commits-since/imod1998/ps3api/latest/main)
+![GitHub](https://img.shields.io/github/license/imod1998/ps3api)
+
 ## **Note**
 *This only works on 32 bit python as TMAPI and CCAPI are 32 bit DLLs.*
 
