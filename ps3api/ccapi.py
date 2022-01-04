@@ -8,31 +8,31 @@ class CCAPIError(CEnum):
     CCAPI_OK = (0)
     CCAPI_ERROR = (-1)
 
-class ConsoleIdType(CEnum):
+class CCAPIConsoleIdType(CEnum):
     IDPS = (0)
     PSID = (1)
 
-class ShutdownMode(CEnum):
+class CCAPIShutdownMode(CEnum):
     SHUTDOWN = (0)
     SOFT_REBOOT = (1)
     HARD_REBOOT = (2)
 
-class BuzzerType(CEnum):
+class CCAPIBuzzerType(CEnum):
     CONTINIOUS = (0)
     SINGLE = (1)
     DOUBLE = (2)
     TRIPLE = (3)
 
-class ColorLed(CEnum):
+class CCAPIColorLed(CEnum):
     GREEN = (0)
     RED = (1)
 
-class StatusLed(CEnum):
+class CCAPIStatusLed(CEnum):
     OFF = (0)
     ON = (1)
     BLINK = (2)
 
-class NotifyIcon(CEnum):
+class CCAPINotifyIcon(CEnum):
     NOTIFY_INFO = (0)
     NOTIFY_CAUTION = (1)
     NOTIFY_FRIEND = (2)
@@ -54,30 +54,39 @@ class NotifyIcon(CEnum):
     NOTIFY_TROPHY3 = (18)
     NOTIFY_TROPHY4 = (19)
 
-class ConsoleType(CEnum):
+class CCAPIConsoleType(CEnum):
     UNK = (0)
     CEX = (1)
     DEX = (2)
     TOOL = (3)
 
-class ConsoleId(Structure):
+class CCAPIConsoleId(Structure):
     _fields_ = [
-        ("value", c_uint8 * 16 )
+        ("value", c_char * 16 )
     ]
 
-class ProcessName(Structure):
+class CCAPIProcessName(Structure):
     _fields_ = [
-        ("value", c_uint8 * 512 )
+        ("value", c_char * 512 )
     ]
 
-class ConsoleName(Structure):
+class CCAPIConsoleName(Structure):
     _fields_ = [
-        ("value", c_uint8 * 256 )
+        ("value", c_char * 256 )
+    ]
+
+class CCAPIConsoleIp(Structure):
+    _fields_ = [
+        ("value", c_char * 256 )
     ]
 
 class CCAPIExports:
     def __init__(self):
+        #
+        # TODO: might need to bundle in future
+        #
         os.add_dll_directory(os.getcwd())
+        os.add_dll_directory(os.path.join(os.getenv('APPDATA'), "ControlConsoleAPI"))
 
         self.CCAPI_DLL = CDLL("CCAPI.dll")
 
@@ -113,8 +122,8 @@ class CCAPIExports:
 
         Set the console ID that will be used on boot.
         '''
-        self.CCAPISetBootConsoleIds = CCAPI_DLL.CCAPISetBootConsoleIds
-        self.CCAPISetBootConsoleIds.argtypes = [ c_int32, c_int32, POINTER(ConsoleId) ]
+        self.CCAPISetBootConsoleIds = self.CCAPI_DLL.CCAPISetBootConsoleIds
+        self.CCAPISetBootConsoleIds.argtypes = [ c_int32, c_int32, POINTER(CCAPIConsoleId) ]
         self.CCAPISetBootConsoleIds.restype = CCAPIError
 
         '''
@@ -123,7 +132,7 @@ class CCAPIExports:
         Set the current console ID.
         '''
         self.CCAPISetConsoleIds = self.CCAPI_DLL.CCAPISetConsoleIds
-        self.CCAPISetConsoleIds.argtypes = [ c_int32, POINTER(ConsoleId) ]
+        self.CCAPISetConsoleIds.argtypes = [ CCAPIConsoleIdType, POINTER(CCAPIConsoleId) ]
         self.CCAPISetConsoleIds.restype = CCAPIError
 
         '''
@@ -149,9 +158,9 @@ class CCAPIExports:
 
         Get the list of processes.
         '''
-        self.CCAPIGetProcessList = self.CCAPI_DLL.CCAPIGetMemory
+        self.CCAPIGetProcessList = self.CCAPI_DLL.CCAPIGetProcessList
         self.CCAPIGetProcessList.argtypes = [ POINTER(c_uint32), POINTER(c_uint32) ]
-        self.CCAPIGetProcessList.restype = CCAPIError
+        self.CCAPIGetProcessList.restype = c_ulong # seems to return something else 0x80001000
 
         '''
         int CCAPIGetProcessName(u32 pid, ProcessName* name);
@@ -159,7 +168,7 @@ class CCAPIExports:
         Get the name of the current attached process.
         '''
         self.CCAPIGetProcessName = self.CCAPI_DLL.CCAPIGetProcessName
-        self.CCAPIGetProcessName.argtypes = [ c_uint32, POINTER(ProcessName) ]
+        self.CCAPIGetProcessName.argtypes = [ c_uint32, POINTER(CCAPIProcessName) ]
         self.CCAPIGetProcessName.restype = CCAPIError
 
         '''
@@ -235,13 +244,13 @@ class CCAPIExports:
         self.CCAPIGetNumberOfConsoles.restype = c_int32
 
         '''
-        int CCAPIGetConsoleInfo(int index, ConsoleName* name, ConsoleIp* ip);
+        void CCAPIGetConsoleInfo(int index, ConsoleName* name, ConsoleIp* ip);
 
         Get console name and ip.
         '''
         self.CCAPIGetConsoleInfo = self.CCAPI_DLL.CCAPIGetConsoleInfo
-        self.CCAPIGetConsoleInfo.argtypes = [ c_uint32, POINTER(ConsoleName), POINTER(ConsoleIp) ]
-        self.CCAPIGetConsoleInfo.restype = CCAPIError
+        self.CCAPIGetConsoleInfo.argtypes = [ c_uint32, POINTER(CCAPIConsoleName), POINTER(CCAPIConsoleIp) ]
+        self.CCAPIGetConsoleInfo.restype = None
 
         '''
         int CCAPIGetDllVersion();
