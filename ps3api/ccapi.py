@@ -142,7 +142,7 @@ class CCAPIExports:
         '''
         self.CCAPISetMemory = self.CCAPI_DLL.CCAPISetMemory
         self.CCAPISetMemory.argtypes = [ c_uint32, c_uint64, c_uint32, POINTER(c_char) ]
-        self.CCAPISetMemory.restype = CCAPIError
+        self.CCAPISetMemory.restype = c_ulong
 
         '''
         int CCAPIGetMemory(u32 pid, u64 address, u32 size, void* data);
@@ -151,7 +151,7 @@ class CCAPIExports:
         '''
         self.CCAPIGetMemory = self.CCAPI_DLL.CCAPIGetMemory
         self.CCAPIGetMemory.argtypes = [ c_uint32, c_uint64, c_uint32, POINTER(c_char) ]
-        self.CCAPIGetMemory.restype = CCAPIError
+        self.CCAPIGetMemory.restype = c_ulong
 
         '''
         int CCAPIGetProcessList(u32* npid, u32* pids);
@@ -160,7 +160,7 @@ class CCAPIExports:
         '''
         self.CCAPIGetProcessList = self.CCAPI_DLL.CCAPIGetProcessList
         self.CCAPIGetProcessList.argtypes = [ POINTER(c_uint32), POINTER(c_uint32) ]
-        self.CCAPIGetProcessList.restype = c_ulong # seems to return something else 0x80001000
+        self.CCAPIGetProcessList.restype = c_ulong
 
         '''
         int CCAPIGetProcessName(u32 pid, ProcessName* name);
@@ -263,19 +263,110 @@ class CCAPIExports:
 
 class CCAPI:
     def __init__(self):
-        raise Exception("CCAPI Not Implemented!!")
+        self.NativeAPI      = CCAPIExports()
+        self.PS3TargetIndex = -1
+        self.IsConnected    = False
+        self.ProcessID      = 0
+
+    def GetNumberOfTargets(self):
+        return self.NativeAPI.CCAPIGetNumberOfConsoles()
 
     def GetDefaultTarget(self):
-        raise Exception("CCAPI Not Implemented!!")
+        NumConsoles = self.GetNumberOfTargets()
 
-    def ConnectTarget(self, TargetIndex):
-        raise Exception("CCAPI Not Implemented!!")
+        if NumConsoles == 0:
+            return None
 
-    def AttachProcess(self):
-        raise Exception("CCAPI Not Implemented!!")
+        return 0
+
+    def GetConsoleInfo(self, TargetIndex):
+        NamePtr = pointer(CCAPIConsoleName())
+        IPPtr   = pointer(CCAPIConsoleIp())
+
+        self.NativeAPI.CCAPIGetConsoleInfo(TargetIndex, NamePtr, IPPtr)
+
+        Name = NamePtr.contents.value
+        IP   = IPPtr.contents.value
+
+        if Name == b"" or IP == b"":
+            return (None, None)
+
+        return (Name.decode("ascii"), IP.decode("ascii"))
+
+    def ConnectTargetWithIP(self, TargetIP):
+        if self.NativeAPI.CCAPIConnectConsole(bytes(TargetIP, "ascii")) == CCAPIError.CCAPI_OK:
+            return True
+        
+        return False
+
+    def ConnectTarget(self, TargetIndex=-1):
+        NumConsoles = self.GetNumberOfTargets()
+
+        if NumConsoles == 0:
+            raise Exception("No Consoles Added In CCAPI")
+
+        TargetIndex = self.GetDefaultTarget() if TargetIndex == -1 else TargetIndex
+
+        if TargetIndex == None:
+            raise Exception("Could not find default console")
+
+        ConsoleName, IP = self.GetConsoleInfo(TargetIndex)
+
+        if IP == None:
+            raise Exception("Failed to find console info")
+
+        print(IP)
+
+        return self.ConnectTargetWithIP(IP)
+
+    def GetProcessList(self):
+        NumProcessPtr = pointer(c_uint32(0))
+
+        if self.NativeAPI.CCAPIGetProcessList(NumProcessPtr, None) == CCAPIError.CCAPI_ERROR:
+            raise Exception("CCAPIGetProcessList() Failed")
+
+        print(NumProcessPtr.contents.value)
+
+        ProccessIDList = (c_uint32 * NumProcessPtr.contents.value)()
+
+        if self.NativeAPI.CCAPIGetProcessList(NumProcessPtr, ProccessIDList) == CCAPIError.CCAPI_ERROR:
+            raise Exception("CCAPIGetProcessList() Failed")
+
+        return list(ProccessIDList)
+
+    def GetProcessName(self, ProcessID):
+        ProcessNamePtr = pointer(CCAPIProcessName())
+
+        if self.NativeAPI.CCAPIGetProcessName(ProcessID, ProcessNamePtr) == CCAPIError.CCAPI_OK:
+            ProcessName = ProcessNamePtr.contents.value
+            return ProcessName.decode("ascii")
+
+        return None
+
+    def AttachProcess(self, ProcessID=-1):
+        if ProcessID == -1:
+            ProcessList = self.GetProcessList()
+
+            for Process in ProcessList:
+                ProcessName = self.GetProcessName(Process)
+
+                if "dev_flash" not in ProcessName:
+                    ProcessID = Process
+                    break
+        
+        if ProcessID == -1:
+            raise Exception("Failed to find game process ID")
+
+        self.ProcessID = ProcessID
 
     def ReadMemory(self, Address, Size):
-        raise Exception("CCAPI Not Implemented!!")
+        MemoryBuffer = (c_char * Size)()
+
+        Error = self.NativeAPI.CCAPIGetMemory(self.ProcessID, Address, Size, MemoryBuffer)
+
+        return bytes(MemoryBuffer)
 
     def WriteMemory(self, Address, Bytes):
-        raise Exception("CCAPI Not Implemented!!")
+        WriteBuffer = (c_char * len(Bytes)).from_buffer(bytearray(Bytes))
+
+        Error = self.NativeAPI.CCAPISetMemory(self.ProcessID, Address, len(Bytes), WriteBuffer)
