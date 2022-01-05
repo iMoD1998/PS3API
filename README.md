@@ -9,6 +9,11 @@ PS3 API for TMAPI and CCAPI in python.
 ## **Note**
 *This only works on 32 bit python as TMAPI and CCAPI are 32 bit DLLs.*
 
+## Installation
+```bash
+pip install ps3api
+```
+
 ## Examples
 ### Connecting and Attaching
 ```python
